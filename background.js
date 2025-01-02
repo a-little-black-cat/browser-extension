@@ -19,25 +19,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Update blocking rules using declarativeNetRequest
 function updateBlockingRules() {
-  console.log('Updating blocking rules with sites:', blockedSites);
-  
+  // Prepare the blocking rules from blockedSites
   const rules = blockedSites.map((site, index) => ({
-    id: index + 1,
+    id: index + 1,  // Ensure unique rule IDs
     priority: 1,
     action: {
-      type: "block"
+      type: "block"  // Block the request
     },
     condition: {
-      urlFilter: `*://*.${site}/*`,
-      resourceTypes: ["main_frame"]
+      urlFilter: `*://*.${site}/*`,  // Match the domains
+      resourceTypes: ["main_frame"]  // Block only the main page load
     }
   }));
 
+  // Log the rules for debugging
+  console.log('Updating blocking rules with sites:', rules);
+
+  // Update dynamic rules
   chrome.declarativeNetRequest.updateDynamicRules({
-    addRules: rules,
-    removeRuleIds: []  // Optionally remove previous rules if needed
+    addRules: rules,  // Add new blocking rules
+    removeRuleIds: []  // Optionally, you can remove old rules
   }, () => {
     console.log("Blocking rules updated!");
   });
+}
+
 }
 
