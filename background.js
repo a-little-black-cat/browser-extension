@@ -1,4 +1,3 @@
-alert("The extension is running.")
 // background.js
 
 let blockedSites = [];
