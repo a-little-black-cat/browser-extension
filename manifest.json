@@ -1,19 +1,28 @@
 {
-  "manifest_version":3,
+  "manifest_version": 3,
+  "name": "Site Blocker",
   "version": "1.0",
-  "name" :"ProductivityBooster",
   "description": "Blocks specified websites.",
-  "permissions": ["webRequest", "webRequestBlocking", "storage"],
+  "permissions": ["declarativeNetRequest"],
   "host_permissions": ["<all_urls>"],
-  "background" :{
+  "background": {
     "service_worker": "background.js"
   },
-  "action":{
+  "action": {
     "default_popup": "popup.html",
-    "default_icon":{
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
     }
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "blocklist",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
   }
 }
