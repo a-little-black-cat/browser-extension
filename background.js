@@ -1,5 +1,3 @@
-// background.js
-
 let blockedSites = [];
 
 // Load initial blocked sites from storage
@@ -19,21 +17,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-// Update blocking rules
+// Update blocking rules using declarativeNetRequest
 function updateBlockingRules() {
-  chrome.webRequest.onBeforeRequest.removeListener(blockingListener);
+  // Prepare blocking rules for the sites stored in blockedSites
+  const rules = blockedSites.map((site, index) => ({
+    id: index + 1,  // Ensure unique rule IDs
+    priority: 1,
+    action: {
+      type: "block"
+    },
+    condition: {
+      urlFilter: `*://*.${site}/*`,
+      resourceTypes: ["main_frame"]
+    }
+  }));
 
-  if (blockedSites.length > 0) {
-    chrome.webRequest.onBeforeRequest.addListener(
-      blockingListener,
-      { urls: blockedSites.map((site) => `*://*.${site}/*`) },
-      ["blocking"]
-    );
-  }
-}
-
-// Blocking listener function
-function blockingListener(details) {
-  console.log(`Blocking: ${details.url}`);
-  return { cancel: true };
+  // Update the dynamic rules
+  chrome.declarativeNetRequest.updateDynamicRules({
+    addRules: rules,
+    removeRuleIds: [] // Optionally remove previous rules if needed
+  }, () => {
+    console.log("Blocking rules updated!");
+  });
 }
