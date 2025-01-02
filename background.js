@@ -9,8 +9,9 @@ chrome.storage.local.get("blockedSites", (data) => {
 // Listen for updates from popup.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "updateBlockedSites") {
-    chrome.storage.local.get("blockedSites", (data) => {
-      blockedSites = data.blockedSites || [];
+    // Update the blocked sites based on user input
+    blockedSites = message.blockedSites || [];
+    chrome.storage.local.set({ blockedSites }, () => {
       updateBlockingRules();
     });
     sendResponse({ status: "updated" });
@@ -35,14 +36,11 @@ function updateBlockingRules() {
   // Log the rules for debugging
   console.log('Updating blocking rules with sites:', rules);
 
-  // Update dynamic rules
+  // Update dynamic rules using declarativeNetRequest API
   chrome.declarativeNetRequest.updateDynamicRules({
     addRules: rules,  // Add new blocking rules
-    removeRuleIds: []  // Optionally, you can remove old rules
+    removeRuleIds: []  // Optionally, you can remove old rules if needed
   }, () => {
     console.log("Blocking rules updated!");
   });
 }
-
-}
-
