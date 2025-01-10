@@ -1,5 +1,3 @@
-// popup.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const siteList = document.getElementById("site-list");
   const saveButton = document.getElementById("save");
@@ -12,11 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // Save blocked sites to storage
   saveButton.addEventListener("click", () => {
     const sites = siteList.value.split("\n").map((site) => site.trim()).filter((site) => site);
+    
+    // Save the updated list of blocked sites to storage
     chrome.storage.local.set({ blockedSites: sites }, () => {
       alert("Blocked sites updated!");
     });
 
-    // Update the background script's listener
-    chrome.runtime.sendMessage({ action: "updateBlockedSites" });
+    // Send the updated list of blocked sites to the background script
+    chrome.runtime.sendMessage({
+      action: "updateBlockedSites",
+      blockedSites: sites
+    });
   });
 });
