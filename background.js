@@ -13,8 +13,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     blockedSites = message.blockedSites || [];
     chrome.storage.local.set({ blockedSites }, () => {
       updateBlockingRules();
+      sendResponse({ status: "updated" }); // Ensure response after rules update
     });
-    sendResponse({ status: "updated" });
+    return true; // Return true to indicate sendResponse will be called asynchronously
   }
 });
 
@@ -33,14 +34,4 @@ function updateBlockingRules() {
     }
   }));
 
-  // Log the rules for debugging
-  console.log('Updating blocking rules with sites:', rules);
-
-  // Update dynamic rules using declarativeNetRequest API
-  chrome.declarativeNetRequest.updateDynamicRules({
-    addRules: rules,  // Add new blocking rules
-    removeRuleIds: []  // Optionally, you can remove old rules if needed
-  }, () => {
-    console.log("Blocking rules updated!");
-  });
-}
+  // Log
